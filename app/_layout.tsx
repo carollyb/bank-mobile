@@ -6,7 +6,7 @@ import 'react-native-reanimated';
 import { AuthProvider } from '@/context/AuthContext';
 
 export const unstable_settings = {
-  anchor: '(tabs)',
+  anchor: '(splash)',
 };
 
 export default function RootLayout() {
@@ -14,7 +14,7 @@ export default function RootLayout() {
     <ThemeProvider value={DefaultTheme}>
       <AuthProvider>
         <Stack>
-          <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+          <Stack.Screen name='(splash)' options={{ headerShown: false }} />
           <Stack.Screen
             name='modal'
             options={{ presentation: 'modal', title: 'Modal' }}

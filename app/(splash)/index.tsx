@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect } from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, Image, StyleSheet, Text, View } from 'react-native';
 
 import Animated, {
   useAnimatedStyle,
@@ -9,7 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function TabTwoScreen() {
+export default function SplashScreen() {
   const fadeAnim = useSharedValue(0);
   const reanimatedStyle = useAnimatedStyle(() => {
     return {
@@ -25,7 +25,7 @@ export default function TabTwoScreen() {
   }, []);
 
   const login = () => {
-    router.replace('/(protected)/transactions');
+    router.replace('/login');
   };
   const signup = () => {
     router.replace('/signup');
@@ -34,7 +34,11 @@ export default function TabTwoScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <Animated.View style={[styles.fadingContainer, reanimatedStyle]}>
-        <Text>Bem vindo ao Byte Bank</Text>
+        <Image
+          source={require('@/assets/images/logo.png')}
+          style={styles.image}
+        />
+        <Text style={styles.text}>Bem vindo ao Byte Bank</Text>
       </Animated.View>
       <View style={styles.actions}>
         <Button title='LOGIN' onPress={login}></Button>
@@ -56,7 +60,17 @@ const styles = StyleSheet.create({
     marginVertical: 16,
   },
   fadingContainer: {
-    padding: 20,
-    backgroundColor: 'powderblue',
+    padding: 36,
+    backgroundColor: '#75e299ff',
+    borderRadius: 8,
+  },
+  text: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  image: {
+    width: 180,
+    height: 40,
+    marginBottom: 16,
   },
 });
