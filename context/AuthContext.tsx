@@ -1,60 +1,77 @@
-import { createContext, useContext, useState } from 'react';
-
-interface User {
-  email: string;
-  password: string;
-}
+import { auth } from '@/config/firebase';
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+  User,
+} from 'firebase/auth';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 interface IAuthContext {
   user: User | null;
-  users: User[];
   isAuthenticated: boolean;
-  login: (email: string, password: string) => boolean;
-  signup: (email: string, password: string) => void;
-  logout: () => void;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<boolean>;
+  signup: (email: string, password: string) => Promise<boolean>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<IAuthContext | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>([]);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const login = (email: string, password: string) => {
-    const foundUser = users.find(
-      (u) => u.email === email && u.password === password,
-    );
-    if (foundUser) {
-      setUser(foundUser);
-      setIsAuthenticated(true);
-      console.log('::AuthProvider:: Usuário logado');
+  // Monitora o estado de autenticação em tempo real
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const login = async (email: string, password: string): Promise<boolean> => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+
       return true;
+    } catch (error: any) {
+      return false;
     }
-    console.log('::AuthProvider:: Credenciais inválidas');
-    return false;
   };
 
-  const signup = (email: string, password: string) => {
-    setUsers((prevUsers) => [...prevUsers, { email, password }]);
-    console.log('::AuthProvider:: Usuário cadastrado');
+  const signup = async (email: string, password: string): Promise<boolean> => {
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+
+      return true;
+    } catch (error: any) {
+      return false;
+    }
   };
 
-  const logout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
-    console.log('::AuthProvider:: Usuário deslogado');
+  const logout = async (): Promise<void> => {
+    try {
+      await signOut(auth);
+    } catch (error: any) {
+      console.error('Erro ao fazer logout:', error);
+    }
   };
+
+  const isAuthenticated = user !== null;
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        users,
         login,
         signup,
         logout,
         isAuthenticated,
+        loading,
       }}
     >
       {children}

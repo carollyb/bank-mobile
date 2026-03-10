@@ -1,8 +1,15 @@
 import { useAuth } from '@/context/AuthContext';
+import { router } from 'expo-router';
 import { Button, Text, View } from 'react-native';
 
 export default function Operations() {
   const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    router.replace('/login');
+  };
+
   return (
     <View
       style={{
@@ -13,7 +20,7 @@ export default function Operations() {
       }}
     >
       <Text>Adicionar / Editar Transação</Text>
-      <Button title='Logout' onPress={logout}></Button>
+      <Button title="Logout" onPress={handleLogout}></Button>
     </View>
   );
 }
