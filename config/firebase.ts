@@ -1,14 +1,14 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
-// Configuração do Firebase (obtida do Firebase Console)
+// Configuração do Firebase (obtida das variáveis de ambiente)
 const firebaseConfig = {
-  apiKey: 'AIzaSyCmvmnLjAs4SGLDiJDDCaGJE-IQm9L4C3E',
-  authDomain: 'bank-mobile-df4ec.firebaseapp.com',
-  projectId: 'bank-mobile-df4ec',
-  storageBucket: 'bank-mobile-df4ec.firebasestorage.app',
-  messagingSenderId: '420246894148',
-  appId: '1:420246894148:web:7d2afa1dbfff6ed17aee11',
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
 };
 
 // Inicializa o Firebase
