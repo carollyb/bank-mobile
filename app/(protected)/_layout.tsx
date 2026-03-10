@@ -1,9 +1,9 @@
+import { useAuth } from '@/context/AuthContext';
 import { Slot } from 'expo-router';
 import { Text, View } from 'react-native';
 
 export default function ProtectedLayout() {
-  // const { isAuthenticated } = useAuth();
-  const isAuthenticated = true;
+  const { isAuthenticated } = useAuth();
   if (!isAuthenticated) {
     return null;
   }
