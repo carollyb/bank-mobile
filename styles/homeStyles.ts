@@ -2,10 +2,9 @@ import { StyleSheet } from 'react-native';
 
 export const homeStyles = StyleSheet.create({
   gradient: {
-    flex: 1,
+    minHeight: '100%',
   },
   container: {
-    flex: 1,
     padding: 20,
     paddingTop: 30,
   },
@@ -42,6 +41,7 @@ export const homeStyles = StyleSheet.create({
   chartContainer: {
     height: 280,
     width: '100%',
+    padding: 4,
   },
   balanceCard: {
     backgroundColor: '#2da12b',

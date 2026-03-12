@@ -1,6 +1,7 @@
 import { useAuth } from '@/context/AuthContext';
 import { homeStyles as styles } from '@/styles/homeStyles';
 import { MOCK_TRANSACTIONS } from '@/utils/mock';
+import { Circle } from '@shopify/react-native-skia';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
@@ -39,7 +40,18 @@ export default function Home() {
               yKeys={['value']}
             >
               {({ points }) => (
-                <Line points={points.value} color='#2da12b' strokeWidth={3} />
+                <>
+                  <Line points={points.value} color='#2da12b' strokeWidth={3} />
+                  {points.value.map((point, index) => (
+                    <Circle
+                      key={index}
+                      cx={point.x}
+                      cy={Number(point.y)}
+                      r={4}
+                      color='#2da12b'
+                    />
+                  ))}
+                </>
               )}
             </CartesianChart>
           </View>
