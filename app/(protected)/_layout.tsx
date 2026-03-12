@@ -1,6 +1,6 @@
 import { useAuth } from '@/context/AuthContext';
 import { Slot } from 'expo-router';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
 export default function ProtectedLayout() {
   const { isAuthenticated } = useAuth();
@@ -9,8 +9,7 @@ export default function ProtectedLayout() {
   }
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', padding: 16 }}>
-      <Text>Protected Layout</Text>
+    <View style={{ flex: 1, justifyContent: 'center' }}>
       <Slot />
     </View>
   );
