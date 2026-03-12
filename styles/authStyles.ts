@@ -9,10 +9,16 @@ export const authStyles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    width: '100%',
+  },
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    padding: 20,
+    paddingHorizontal: 20,
     paddingTop: 50,
+    paddingBottom: 20,
+    width: '100%',
   },
   logo: {
     width: 120,
