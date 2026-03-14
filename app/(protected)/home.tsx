@@ -8,19 +8,21 @@ import { Pressable, Text, View } from 'react-native';
 import { CartesianChart, Line } from 'victory-native';
 
 export default function Home() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   const handleLogout = async () => {
     await logout();
     router.replace('/login');
   };
 
+  const userName = user?.displayName || 'Cliente';
+
   return (
     <LinearGradient colors={['#75e299ff', '#2da12b']} style={styles.gradient}>
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.greeting}>{`Olá, {{Cliente}}! 👋`}</Text>
+          <Text style={styles.greeting}>{`Olá, ${userName}! 👋`}</Text>
           <Text style={styles.subtitle}>Bem-vindo de volta ao seu banco</Text>
         </View>
 
@@ -36,19 +38,19 @@ export default function Home() {
           <View style={styles.chartContainer}>
             <CartesianChart
               data={MOCK_TRANSACTIONS}
-              xKey='date'
+              xKey="date"
               yKeys={['value']}
             >
               {({ points }) => (
                 <>
-                  <Line points={points.value} color='#2da12b' strokeWidth={3} />
+                  <Line points={points.value} color="#2da12b" strokeWidth={3} />
                   {points.value.map((point, index) => (
                     <Circle
                       key={index}
                       cx={point.x}
                       cy={Number(point.y)}
                       r={4}
-                      color='#2da12b'
+                      color="#2da12b"
                     />
                   ))}
                 </>

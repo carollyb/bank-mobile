@@ -13,3 +13,7 @@ export const validatePasswordMatch = (
 ): boolean => {
   return password === confirmPassword;
 };
+
+export const validateName = (name: string): boolean => {
+  return name.trim().length >= 2;
+};
