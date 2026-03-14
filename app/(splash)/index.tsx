@@ -59,15 +59,6 @@ export default function SplashScreen() {
           </View>
           <View style={styles.feature}>
             <Ionicons
-              name="flash"
-              size={24}
-              color="#fff"
-              style={styles.featureIcon}
-            />
-            <Text style={styles.featureText}>Transações Rápidas</Text>
-          </View>
-          <View style={styles.feature}>
-            <Ionicons
               name="trending-up"
               size={24}
               color="#fff"
