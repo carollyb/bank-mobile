@@ -4,7 +4,7 @@ import { MOCK_TRANSACTIONS } from '@/utils/mock';
 import { Circle } from '@shopify/react-native-skia';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { CartesianChart, Line } from 'victory-native';
 
 export default function Home() {
@@ -17,7 +17,10 @@ export default function Home() {
 
   return (
     <LinearGradient colors={['#75e299ff', '#2da12b']} style={styles.gradient}>
-      <View style={styles.container}>
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.scrollContent}
+      >
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.greeting}>{`Olá, {{Cliente}}! 👋`}</Text>
@@ -67,7 +70,7 @@ export default function Home() {
         >
           <Text style={styles.buttonText}>Sair</Text>
         </Pressable>
-      </View>
+      </ScrollView>
     </LinearGradient>
   );
 }

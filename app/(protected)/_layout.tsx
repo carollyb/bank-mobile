@@ -1,3 +1,4 @@
+import { TabNavigation } from '@/components/TabNavigation';
 import { useAuth } from '@/context/AuthContext';
 import { protectedHeaderStyles as styles } from '@/styles/protectedHeaderStyles';
 import { Slot } from 'expo-router';
@@ -22,6 +23,14 @@ export default function ProtectedLayout() {
       <ScrollView style={styles.content}>
         <Slot />
       </ScrollView>
+      <View style={styles.tabNavigation}>
+        <TabNavigation
+          tabs={[
+            { label: 'Início', href: '/home' },
+            { label: 'Transações', href: '/transactions' },
+          ]}
+        />
+      </View>
     </SafeAreaView>
   );
 }

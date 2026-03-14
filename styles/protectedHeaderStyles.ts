@@ -22,4 +22,5 @@ export const protectedHeaderStyles = StyleSheet.create({
   content: {
     flex: 1,
   },
+  tabNavigation: { marginTop: 'auto' },
 });

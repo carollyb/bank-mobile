@@ -2,11 +2,23 @@ import { StyleSheet } from 'react-native';
 
 export const homeStyles = StyleSheet.create({
   gradient: {
-    minHeight: '100%',
+    flex: 1,
+  },
+  outerContainer: {
+    flex: 1,
+    position: 'relative',
   },
   container: {
     padding: 20,
     paddingTop: 30,
+  },
+  scrollContainer: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 30,
+    paddingBottom: 120,
   },
   header: {
     marginBottom: 30,
