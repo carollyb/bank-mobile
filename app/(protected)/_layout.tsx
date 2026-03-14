@@ -1,7 +1,7 @@
 import { useAuth } from '@/context/AuthContext';
 import { protectedHeaderStyles as styles } from '@/styles/protectedHeaderStyles';
-import { Slot } from 'expo-router';
-import { Image, ScrollView, View } from 'react-native';
+import { Stack } from 'expo-router';
+import { Image, View } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -19,9 +19,9 @@ export default function ProtectedLayout() {
           style={styles.logo}
         />
       </View>
-      <ScrollView style={styles.content}>
-        <Slot />
-      </ScrollView>
+      <View style={styles.content}>
+        <Stack screenOptions={{ headerShown: false }} />
+      </View>
     </SafeAreaView>
   );
 }

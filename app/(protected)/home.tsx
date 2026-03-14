@@ -4,7 +4,7 @@ import { MOCK_TRANSACTIONS } from '@/utils/mock';
 import { Circle } from '@shopify/react-native-skia';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { CartesianChart, Line } from 'victory-native';
 
 export default function Home() {
@@ -19,7 +19,10 @@ export default function Home() {
 
   return (
     <LinearGradient colors={['#75e299ff', '#2da12b']} style={styles.gradient}>
-      <View style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.greeting}>{`Olá, ${userName}! 👋`}</Text>
@@ -59,6 +62,16 @@ export default function Home() {
           </View>
         </View>
 
+        <Pressable
+          style={({ pressed }) => [
+            styles.extratoButton,
+            pressed && styles.buttonPressed,
+          ]}
+          onPress={() => router.push('/(protected)/transactions')}
+        >
+          <Text style={styles.buttonText}>Ver Extrato</Text>
+        </Pressable>
+
         {/* Logout Button */}
         <Pressable
           style={({ pressed }) => [
@@ -69,7 +82,7 @@ export default function Home() {
         >
           <Text style={styles.buttonText}>Sair</Text>
         </Pressable>
-      </View>
+      </ScrollView>
     </LinearGradient>
   );
 }
