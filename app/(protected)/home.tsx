@@ -21,7 +21,8 @@ export default function Home() {
     <LinearGradient colors={['#75e299ff', '#2da12b']} style={styles.gradient}>
       <ScrollView
         style={styles.scrollContainer}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
       >
         {/* Header */}
         <View style={styles.header}>
@@ -41,19 +42,19 @@ export default function Home() {
           <View style={styles.chartContainer}>
             <CartesianChart
               data={MOCK_TRANSACTIONS}
-              xKey="date"
+              xKey='date'
               yKeys={['value']}
             >
               {({ points }) => (
                 <>
-                  <Line points={points.value} color="#2da12b" strokeWidth={3} />
+                  <Line points={points.value} color='#2da12b' strokeWidth={3} />
                   {points.value.map((point, index) => (
                     <Circle
                       key={index}
                       cx={point.x}
                       cy={Number(point.y)}
                       r={4}
-                      color="#2da12b"
+                      color='#2da12b'
                     />
                   ))}
                 </>
@@ -61,6 +62,16 @@ export default function Home() {
             </CartesianChart>
           </View>
         </View>
+
+        <Pressable
+          style={({ pressed }) => [
+            styles.extratoButton,
+            pressed && styles.buttonPressed,
+          ]}
+          onPress={() => router.push('/(protected)/transactions')}
+        >
+          <Text style={styles.buttonText}>Ver Extrato</Text>
+        </Pressable>
 
         {/* Logout Button */}
         <Pressable
