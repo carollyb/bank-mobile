@@ -9,6 +9,7 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
     date: '2026-03-11',
     from: 'Salary Deposit',
     to: 'Main Account',
+    createdAt: '2026-03-11T10:00:00Z',
   },
   {
     id: 'txn-002',
@@ -18,6 +19,7 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
     date: '2026-03-10',
     to: 'Electric Company',
     urlAnexo: 'https://example.com/receipt-001.pdf',
+    createdAt: '2026-03-10T15:30:00Z',
   },
   {
     id: 'txn-003',
@@ -25,6 +27,8 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
     type: 'withdraw',
     value: -200,
     date: '2026-03-09',
+    from: 'ATM Withdrawal',
+    createdAt: '2026-03-09T12:45:00Z',
   },
   {
     id: 'txn-004',
@@ -34,6 +38,8 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
     date: '2026-03-08',
     from: 'Main Account',
     to: 'Savings Account (acc-002)',
+    urlAnexo: 'https://example.com/transfer-receipt-001.pdf',
+    createdAt: '2026-03-08T09:20:00Z',
   },
   {
     id: 'txn-005',
@@ -43,6 +49,7 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
     date: '2026-03-07',
     to: 'Online Shopping',
     urlAnexo: 'https://example.com/receipt-002.pdf',
+    createdAt: '2026-03-07T18:10:00Z',
   },
   {
     id: 'txn-006',
@@ -51,6 +58,7 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
     value: 250,
     date: '2026-03-06',
     from: 'Freelance Project Payment',
+    createdAt: '2026-03-06T14:00:00Z',
   },
   {
     id: 'txn-007',
@@ -58,6 +66,7 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
     type: 'withdraw',
     value: -100,
     date: '2026-03-05',
+    createdAt: '2026-03-05T11:30:00Z',
   },
   {
     id: 'txn-008',
@@ -68,6 +77,7 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
     from: 'Investment Account',
     to: 'Main Account (acc-001)',
     urlAnexo: 'https://example.com/transfer-receipt.pdf',
+    createdAt: '2026-03-04T16:45:00Z',
   },
 ];
 

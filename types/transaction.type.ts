@@ -11,5 +11,5 @@ export type Transaction = {
   from?: string;
   to?: string;
   urlAnexo?: string;
-  createdAt?: string;
+  createdAt: string;
 };

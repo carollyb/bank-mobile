@@ -9,13 +9,25 @@ import { Circle } from '@shopify/react-native-skia';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useCallback } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import { CartesianChart, Line } from 'victory-native';
 
 export default function Home() {
   const { logout, user } = useAuth();
-  const { transactions, balance, onDelete, fetchTransactions, deletingId } =
-    useTransactionContext();
+  const {
+    transactions,
+    balance,
+    onDelete,
+    fetchTransactions,
+    loading,
+    deletingId,
+  } = useTransactionContext();
 
   const handleLogout = async () => {
     await logout();
@@ -55,7 +67,7 @@ export default function Home() {
           <View style={styles.chartContainer}>
             <CartesianChart
               data={sortTransactionsByDateAsc(transactions.slice(0, 10))}
-              xKey='date'
+              xKey='createdAt'
               yKeys={['value']}
             >
               {({ points }) => (
@@ -81,7 +93,13 @@ export default function Home() {
         </View>
 
         <View>
-          {transactions.slice(0, 10).length > 0 ? (
+          {loading ? (
+            <ActivityIndicator
+              color='#2da12b'
+              size='large'
+              style={{ marginTop: 40 }}
+            />
+          ) : transactions.slice(0, 10).length > 0 ? (
             transactions
               .slice(0, 10)
               .map((item) => (

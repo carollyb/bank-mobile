@@ -9,8 +9,8 @@ export const sortTransactionsByDateAsc = (
   transactions: Transaction[],
 ): Transaction[] => {
   return [...transactions].sort((a, b) => {
-    const dateA = new Date(a.date).getTime();
-    const dateB = new Date(b.date).getTime();
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
     return dateA - dateB;
   });
 };
@@ -24,8 +24,8 @@ export const sortTransactionsByDateDesc = (
   transactions: Transaction[],
 ): Transaction[] => {
   return [...transactions].sort((a, b) => {
-    const dateA = new Date(a.date).getTime();
-    const dateB = new Date(b.date).getTime();
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
     return dateB - dateA;
   });
 };
