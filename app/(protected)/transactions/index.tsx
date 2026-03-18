@@ -1,23 +1,16 @@
 import { TransactionItem } from '@/components/TransactionItem';
-import { useAuth } from '@/context/AuthContext';
+import { useTransactionContext } from '@/context/TransactionContext';
 import { transactionsStyles as styles } from '@/styles/transactionsStyle';
-import { Transaction, TransactionType } from '@/types/transaction.type';
+import { TransactionType } from '@/types/transaction.type';
 import { formatCurrency } from '@/utils/formatCurrency';
 import { formatDate } from '@/utils/formatDate';
-import {
-  deleteTransaction,
-  getUserBalance,
-  getUserCategories,
-  getUserTransactionsPaginated,
-} from '@/utils/transactionService';
+import { toISODate } from '@/utils/toISODate';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
-import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   Pressable,
   RefreshControl,
@@ -35,172 +28,47 @@ const FILTER_TYPES: { key: 'all' | TransactionType; label: string }[] = [
   { key: 'payment', label: 'Boleto' },
 ];
 
-const PAGE_SIZE = 20;
-
-const toISODate = (date: Date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
-
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 export default function Transactions() {
-  const { user } = useAuth();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [balance, setBalance] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [lastVisible, setLastVisible] =
-    useState<QueryDocumentSnapshot<DocumentData> | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-
-  const [typeFilter, setTypeFilter] = useState<'all' | TransactionType>('all');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
-  const [filtersExpanded, setFiltersExpanded] = useState(false);
-  const [pickerTarget, setPickerTarget] = useState<'start' | 'end' | null>(
-    null,
-  );
-
-  const activeFilterCount = useMemo(() => {
-    let count = 0;
-    if (typeFilter !== 'all') count += 1;
-    if (categoryFilter !== 'all') count += 1;
-    if (startDate) count += 1;
-    if (endDate) count += 1;
-    return count;
-  }, [typeFilter, categoryFilter, startDate, endDate]);
-
-  const filters = useMemo(
-    () => ({
-      ...(typeFilter !== 'all' ? { type: typeFilter } : {}),
-      ...(categoryFilter !== 'all' ? { category: categoryFilter } : {}),
-      ...(startDate ? { fromDate: toISODate(startDate) } : {}),
-      ...(endDate ? { toDate: toISODate(endDate) } : {}),
-    }),
-    [typeFilter, categoryFilter, startDate, endDate],
-  );
-
-  const loadFirstPage = useCallback(
-    async (isRefresh = false) => {
-      if (!user) return;
-
-      if (!isRefresh) setLoading(true);
-      try {
-        const [page, bal, cats] = await Promise.all([
-          getUserTransactionsPaginated(user.uid, {
-            pageSize: PAGE_SIZE,
-            cursor: null,
-            filters,
-          }),
-          getUserBalance(user.uid),
-          getUserCategories(user.uid),
-        ]);
-
-        setTransactions(page.transactions);
-        setLastVisible(page.lastVisible);
-        setHasMore(page.hasMore);
-        setBalance(bal);
-        setCategories(cats);
-      } catch (error) {
-        const code =
-          typeof error === 'object' && error && 'code' in error
-            ? String((error as { code?: string }).code)
-            : '';
-        const message =
-          typeof error === 'object' && error && 'message' in error
-            ? String((error as { message?: string }).message)
-            : '';
-        console.log('[transactions] load error:', { code, message, error });
-
-        if (code === 'failed-precondition' || message.includes('index')) {
-          Alert.alert(
-            'Indice necessario',
-            'Seu filtro precisa de indice no Firestore. Abra o link de indice no log do erro para criar automaticamente.',
-          );
-        } else {
-          Alert.alert('Erro', 'Não foi possível carregar as transações.');
-        }
-      } finally {
-        setLoading(false);
-        setRefreshing(false);
-      }
-    },
-    [user, filters],
-  );
-
-  const loadMore = useCallback(async () => {
-    if (!user || loading || loadingMore || !hasMore || !lastVisible) return;
-    setLoadingMore(true);
-    try {
-      const page = await getUserTransactionsPaginated(user.uid, {
-        pageSize: PAGE_SIZE,
-        cursor: lastVisible,
-        filters,
-      });
-      setTransactions((prev) => [...prev, ...page.transactions]);
-      setLastVisible(page.lastVisible);
-      setHasMore(page.hasMore);
-    } catch (error) {
-      Alert.alert('Erro', 'Falha ao carregar mais transações.');
-    } finally {
-      setLoadingMore(false);
-    }
-  }, [user, loading, loadingMore, hasMore, lastVisible, filters]);
+  const {
+    transactions,
+    fetchTransactions,
+    onDelete,
+    loadMore,
+    deletingId,
+    categories,
+    balance,
+    loading,
+    clearFilters,
+    refreshing,
+    setRefreshing,
+    activeFilterCount,
+    setFiltersExpanded,
+    filtersExpanded,
+    typeFilter,
+    setTypeFilter,
+    categoryFilter,
+    setCategoryFilter,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    pickerTarget,
+    setPickerTarget,
+    loadingMore,
+    hasMore,
+  } = useTransactionContext();
 
   useFocusEffect(
     useCallback(() => {
-      loadFirstPage();
-    }, [loadFirstPage]),
+      fetchTransactions();
+    }, [fetchTransactions]),
   );
 
   const onRefresh = () => {
     setRefreshing(true);
-    loadFirstPage(true);
-  };
-
-  const onDelete = useCallback(
-    (item: Transaction) => {
-      if (!user) return;
-
-      Alert.alert(
-        'Excluir transação',
-        'Essa ação remove a transação permanentemente. Deseja continuar?',
-        [
-          { text: 'Cancelar', style: 'cancel' },
-          {
-            text: 'Excluir',
-            style: 'destructive',
-            onPress: async () => {
-              setDeletingId(item.id);
-              try {
-                await deleteTransaction(user.uid, item.id);
-                setTransactions((prev) => prev.filter((t) => t.id !== item.id));
-                setBalance((prev) => prev - item.value);
-              } catch {
-                Alert.alert('Erro', 'Não foi possível excluir a transação.');
-              } finally {
-                setDeletingId(null);
-              }
-            },
-          },
-        ],
-      );
-    },
-    [user],
-  );
-
-  const clearFilters = () => {
-    setTypeFilter('all');
-    setCategoryFilter('all');
-    setStartDate(null);
-    setEndDate(null);
+    fetchTransactions(true);
   };
 
   return (
