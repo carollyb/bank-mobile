@@ -2,11 +2,23 @@ import { StyleSheet } from 'react-native';
 
 export const homeStyles = StyleSheet.create({
   gradient: {
-    minHeight: '100%',
+    flex: 1,
+  },
+  outerContainer: {
+    flex: 1,
+    position: 'relative',
   },
   container: {
     padding: 20,
     paddingTop: 30,
+  },
+  scrollContainer: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 30,
+    paddingBottom: 120,
   },
   header: {
     marginBottom: 30,
@@ -59,12 +71,21 @@ export const homeStyles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
   },
+  extratoButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 20,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.6)',
+  },
   button: {
     backgroundColor: '#ff4444',
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 12,
     shadowColor: '#ff4444',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,

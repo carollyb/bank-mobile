@@ -1,7 +1,8 @@
+import { TabNavigation } from '@/components/TabNavigation';
 import { useAuth } from '@/context/AuthContext';
 import { protectedHeaderStyles as styles } from '@/styles/protectedHeaderStyles';
 import { Slot } from 'expo-router';
-import { Image, ScrollView, View } from 'react-native';
+import { Image, View } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -19,9 +20,17 @@ export default function ProtectedLayout() {
           style={styles.logo}
         />
       </View>
-      <ScrollView style={styles.content}>
+      <View style={styles.content}>
         <Slot />
-      </ScrollView>
+      </View>
+      <View style={styles.tabNavigation}>
+        <TabNavigation
+          tabs={[
+            { label: 'Início', href: '/home' },
+            { label: 'Transações', href: '/transactions' },
+          ]}
+        />
+      </View>
     </SafeAreaView>
   );
 }

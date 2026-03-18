@@ -9,6 +9,7 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
     date: '2026-03-11',
     from: 'Salary Deposit',
     to: 'Main Account',
+    createdAt: '2026-03-11T10:00:00Z',
   },
   {
     id: 'txn-002',
@@ -18,6 +19,7 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
     date: '2026-03-10',
     to: 'Electric Company',
     urlAnexo: 'https://example.com/receipt-001.pdf',
+    createdAt: '2026-03-10T15:30:00Z',
   },
   {
     id: 'txn-003',
@@ -25,6 +27,8 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
     type: 'withdraw',
     value: -200,
     date: '2026-03-09',
+    from: 'ATM Withdrawal',
+    createdAt: '2026-03-09T12:45:00Z',
   },
   {
     id: 'txn-004',
@@ -34,6 +38,8 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
     date: '2026-03-08',
     from: 'Main Account',
     to: 'Savings Account (acc-002)',
+    urlAnexo: 'https://example.com/transfer-receipt-001.pdf',
+    createdAt: '2026-03-08T09:20:00Z',
   },
   {
     id: 'txn-005',
@@ -43,6 +49,7 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
     date: '2026-03-07',
     to: 'Online Shopping',
     urlAnexo: 'https://example.com/receipt-002.pdf',
+    createdAt: '2026-03-07T18:10:00Z',
   },
   {
     id: 'txn-006',
@@ -51,6 +58,7 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
     value: 250,
     date: '2026-03-06',
     from: 'Freelance Project Payment',
+    createdAt: '2026-03-06T14:00:00Z',
   },
   {
     id: 'txn-007',
@@ -58,6 +66,7 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
     type: 'withdraw',
     value: -100,
     date: '2026-03-05',
+    createdAt: '2026-03-05T11:30:00Z',
   },
   {
     id: 'txn-008',
@@ -68,5 +77,66 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
     from: 'Investment Account',
     to: 'Main Account (acc-001)',
     urlAnexo: 'https://example.com/transfer-receipt.pdf',
+    createdAt: '2026-03-04T16:45:00Z',
+  },
+];
+
+const teste = [
+  {
+    accountId: '1hPVGdUZhGM1cUsQGyKygBaF6Xh1',
+    createdAt: '2026-03-17T03:24:17.317Z',
+    date: '2026-03-17',
+    id: 'qQCOPf2Y0N0icBHEpR0W',
+    type: 'deposit',
+    value: 120,
+  },
+  {
+    accountId: '1hPVGdUZhGM1cUsQGyKygBaF6Xh1',
+    createdAt: '2026-03-17T03:27:01.843Z',
+    date: '2026-03-17',
+    description: 'energia',
+    id: 'lphYG4TeaVszcRp6DCFj',
+    type: 'payment',
+    value: -130,
+  },
+  {
+    accountId: '1hPVGdUZhGM1cUsQGyKygBaF6Xh1',
+    category: 'estudo',
+    createdAt: '2026-03-17T23:46:11.699Z',
+    date: '2026-03-17',
+    id: 'POKk6OqEGDy8yIssRudx',
+    type: 'payment',
+    value: -500,
+  },
+  {
+    accountId: '1hPVGdUZhGM1cUsQGyKygBaF6Xh1',
+    createdAt: '2026-03-17T03:26:43.002Z',
+    date: '2026-03-17',
+    description: 'internet',
+    id: '5xQ2JBI2jgZcRA29m8zt',
+    type: 'payment',
+    value: -120,
+  },
+  {
+    accountId: '1hPVGdUZhGM1cUsQGyKygBaF6Xh1',
+    category: 'mercado',
+    createdAt: '2026-03-14T22:06:24.348Z',
+    date: '2026-03-14',
+    description: '',
+    from: 'eu',
+    id: 'gNR1lzQApI3nenBpxHPt',
+    to: 'feira',
+    type: 'transfer',
+    updatedAt: '2026-03-14T22:07:26.200Z',
+    value: -100,
+  },
+  {
+    accountId: '1hPVGdUZhGM1cUsQGyKygBaF6Xh1',
+    createdAt: '2026-03-14T22:03:35.881Z',
+    date: '2026-03-14',
+    description: 'salário',
+    id: 'Wfd0IBDIg2SEonqzcqwO',
+    type: 'deposit',
+    value: 5000,
   },
 ];
