@@ -5,6 +5,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
 import { AuthProvider } from '@/context/AuthContext';
+import { TransactionProvider } from '@/context/TransactionContext';
 
 export const unstable_settings = {
   anchor: '(splash)',
@@ -15,16 +16,21 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={DefaultTheme}>
         <AuthProvider>
-          <Stack>
-            <Stack.Screen name="(splash)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="(protected)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="modal"
-              options={{ presentation: 'modal', title: 'Modal' }}
-            />
-          </Stack>
-          <StatusBar style="auto" />
+          <TransactionProvider>
+            <Stack>
+              <Stack.Screen name='(splash)' options={{ headerShown: false }} />
+              <Stack.Screen name='(auth)' options={{ headerShown: false }} />
+              <Stack.Screen
+                name='(protected)'
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name='modal'
+                options={{ presentation: 'modal', title: 'Modal' }}
+              />
+            </Stack>
+            <StatusBar style='auto' />
+          </TransactionProvider>
         </AuthProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
