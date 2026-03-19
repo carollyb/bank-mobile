@@ -1,50 +1,177 @@
-# Welcome to your Expo app 👋
+# Bank Mobile 🏦
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicativo mobile de gerenciamento de transações bancárias desenvolvido com [Expo](https://expo.dev) e React Native. O projeto implementa autenticação com Firebase, integração com Cloud Firestore para persistência de dados e oferece uma experiência visual moderna com animações nativas.
 
-## Get started
+## 🚀 Como Executar o Projeto Localmente
 
-1. Install dependencies
+### Pré-requisitos
+
+- Node.js (versão 16 ou superior)
+- npm ou yarn
+- Expo CLI instalado globalmente (`npm install -g expo-cli`)
+- Uma conta no Firebase com projeto configurado
+- Android Studio ou Xcode (para emuladores)
+
+### Passos para Instalação
+
+1. **Clone o repositório**
+
+   ```bash
+   git clone <seu-repositorio>
+   cd bank-mobile
+   ```
+
+2. **Instale as dependências**
 
    ```bash
    npm install
    ```
 
-2. Start the app
+3. **Configure o Firebase**
+   - Crie um arquivo `.env` na raiz do projeto com suas credenciais do Firebase:
+
+   ```env
+   EXPO_PUBLIC_FIREBASE_API_KEY=sua_api_key
+   EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=seu_auth_domain
+   EXPO_PUBLIC_FIREBASE_PROJECT_ID=seu_project_id
+   EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=seu_storage_bucket
+   EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=seu_sender_id
+   EXPO_PUBLIC_FIREBASE_APP_ID=seu_app_id
+   ```
+
+4. **Inicie a aplicação**
 
    ```bash
+   npm start
+   # ou
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+5. **Escolha o ambiente de execução**
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+   No terminal, você verá opções para executar em:
+   - **i** - iOS Simulator
+   - **a** - Android Emulator
+   - **w** - Web browser
+   - **Expo Go** - Digitalize o QR code com o app Expo Go
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 📱 Funcionalidades
 
-## Get a fresh project
+### 🏠 Tela Principal (Dashboard)
 
-When you're ready, run:
+A tela principal oferece uma visão geral das finanças do usuário com as seguintes características:
 
-```bash
-npm run reset-project
+- **Exibição de Saldo Total**: Mostra o saldo atual da conta do usuário
+- **Gráficos e Análises Financeiras**: Visualização dos últimos 10 em um gráfico de linha que permite acompanhar a evolução do saldo ao longo do tempo
+- **Últimas Transações**: Lista das 10 transações mais recentes
+- **Animações Suaves**:
+  - A seção "Últimas Transações" utiliza **fade-in animation** (Reanimated) que ativa automaticamente quando o usuário faz scroll para baixo na página
+  - A opacidade é modificada dinamicamente baseada na posição de scroll, criando um efeito de aparição progressiva
+
+### 💳 Tela de Listagem de Transações
+
+Interface completa para visualizar e gerenciar todas as transações do usuário:
+
+- **Lista Completa de Transações**: Exibição detalhada de todas as transações do usuário
+- **Filtros Avançados**:
+  - Filtro por tipo (Depósito, Saque, Transferência, Boleto)
+  - Filtro por categoria customizadas
+  - Filtro por período (data inicial e final)
+  - Badge indicador do número de filtros ativos
+  - Botão para limpar todos os filtros de uma vez
+- **Paginação Eficiente**: Implementação de scroll infinito com paginação sob demanda (20 transações por página) para lidar com grandes volumes de dados de forma otimizada
+- **Integração com Cloud Firestore**: Todas as transações são sincronizadas em tempo real com o banco de dados, garantindo dados sempre atualizados e sincronizados entre dispositivos
+- **Gerenciamento Local**: Opção para deletar transações com confirmação de segurança
+- **Refresh Manual**: Opção de atualizar a lista com pull-to-refresh
+
+### ➕ Tela de Adicionar/Editar Transação
+
+Interface intuitiva para criar novas transações e editar as existentes:
+
+- **Campos de Entrada**:
+  - Tipo de transação (Saque, Depósito, Transferência, Boleto)
+  - Valor da transação com formatação automática
+  - Data da transação com date picker nativo
+  - Categoria (customizável, com opção de criar novas categorias)
+  - Descrição (campo adicional)
+  - Campos de origem e destino (para transferências)
+
+- **Validação Avançada**:
+  - Validação obrigatória de campos essenciais (valor)
+  - Formatação automática de valores em formato monetário
+  - Verificação de campos condicionais baseada no tipo de transação
+  - Mensagens de erro informativas e amigáveis
+
+- **Upload de Recibos**:
+  - Possibilidade de anexar recibos e documentos relacionados à transação
+  - Suporte para múltiplos formatos (imagens e PDFs)
+  - Armazenamento seguro no Firebase Storage
+  - Visualização e gerenciamento de anexos
+
+- **Modo Edição**: Carregamento automático dos dados da transação para edição com possibilidade de atualização
+- **Confirmações Visuais**: Mensagens de sucesso/erro após salvar as alterações
+
+## 🛠️ Stack Tecnológico
+
+- **Framework**: React Native com Expo
+- **Roteamento**: Expo Router (file-based routing)
+- **Autenticação**: Firebase Authentication
+- **Banco de Dados**: Cloud Firestore
+- **Animações**: React Native Reanimated
+- **Gráficos**: Victory Native
+- **Gerenciamento de Estado**: Context API
+- **Validação**: Validação customizada
+- **Estilagem**: StyleSheet React Native
+
+## 📁 Estrutura do Projeto
+
+```
+bank-mobile/
+├── app/                          # Telas e roteamento
+│   ├── (auth)/                   # Telas de autenticação
+│   ├── (protected)/              # Telas protegidas
+│   │   ├── home.tsx             # Dashboard principal
+│   │   └── transactions/         # Listar e gerenciar transações
+│   └── (splash)/                 # Tela de splash
+├── components/                   # Componentes reutilizáveis
+├── context/                      # Context API (autenticação, transações)
+├── styles/                       # Estilos centralizados
+├── utils/                        # Funções utilitárias
+├── types/                        # TypeScript types
+└── config/                       # Configurações (Firebase)
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 🔐 Autenticação
 
-## Learn more
+O aplicativo utiliza Firebase Authentication com suporte para:
 
-To learn more about developing your project with Expo, look at the following resources:
+- Criação de novo usuário (Sign Up)
+- Login com email e senha
+- Logout seguro
+- Persistência de sessão
+- Token refresh automático
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## 📊 Sincronização de Dados
 
-## Join the community
+Todos os dados são sincronizados em tempo real com o Cloud Firestore:
 
-Join our community of developers creating universal apps.
+- Transações do usuário
+- Saldo da conta
+- Categorias customizadas
+- Perfil do usuário
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 🐛 Tratamento de Erros
+
+A aplicação conta com tratamento robusto de erros:
+
+- Mensagens de erro amigáveis ao usuário
+- Alertas informativos para situações especiais (falta de índices no Firestore)
+- Fallback para dados locais quando disponível
+- Log de erros para debugging
+
+## 📚 Recursos Adicionais
+
+- [Documentação Expo](https://docs.expo.dev/)
+- [React Native Docs](https://reactnative.dev/)
+- [Firebase Documentation](https://firebase.google.com/docs)
+- [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/)
