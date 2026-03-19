@@ -3,7 +3,10 @@ import { useAuth } from '@/context/AuthContext';
 import { useTransactionContext } from '@/context/TransactionContext';
 import { homeStyles as styles } from '@/styles/homeStyles';
 import { formatCurrency } from '@/utils/formatCurrency';
-import { sortTransactionsByDateAsc } from '@/utils/sortTransactions';
+import {
+  sortTransactionsByDateAsc,
+  sortTransactionsByDateDesc,
+} from '@/utils/sortTransactions';
 import { useFocusEffect } from '@react-navigation/native';
 import { Circle } from '@shopify/react-native-skia';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -131,16 +134,16 @@ export default function Home() {
                 style={{ marginTop: 40 }}
               />
             ) : transactions.slice(0, 10).length > 0 ? (
-              transactions
-                .slice(0, 10)
-                .map((item) => (
+              sortTransactionsByDateDesc(transactions.slice(0, 10)).map(
+                (item) => (
                   <TransactionItem
                     key={item.id}
                     item={item}
                     deleting={deletingId === item.id}
                     onDelete={onDelete}
                   />
-                ))
+                ),
+              )
             ) : (
               <Text>Nenhuma transação ainda.</Text>
             )}
