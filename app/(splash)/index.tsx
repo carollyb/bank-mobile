@@ -15,7 +15,7 @@ export default function SplashScreen() {
         if (isAuthenticated) {
           router.replace('/home');
         }
-      }, 1500);
+      }, 1000);
 
       return () => clearTimeout(timer);
     }

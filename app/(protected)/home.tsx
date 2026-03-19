@@ -1,6 +1,8 @@
+import { TransactionDetailSheet } from '@/components/TransactionDetailSheet';
 import { TransactionItem } from '@/components/TransactionItem';
 import { useAuth } from '@/context/AuthContext';
 import { useTransactionContext } from '@/context/TransactionContext';
+import { useTransactionDetailSheet } from '@/hooks/use-transaction-detail-sheet';
 import { homeStyles as styles } from '@/styles/homeStyles';
 import { formatCurrency } from '@/utils/formatCurrency';
 import {
@@ -10,16 +12,16 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { Circle } from '@shopify/react-native-skia';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import {
   ActivityIndicator,
-  Pressable,
+  Animated as RNAnimated,
   ScrollView,
   Text,
   View,
 } from 'react-native';
-import Animated, {
+import {
+  default as Animated,
   useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
@@ -28,16 +30,16 @@ import Animated, {
 import { CartesianChart, Line } from 'victory-native';
 
 export default function Home() {
-  const fadeAnim = useSharedValue(0.2);
+  const fadeAnim = useSharedValue(0.8);
   const scrollY = useSharedValue(0);
 
   useAnimatedReaction(
     () => scrollY.value,
     (value) => {
-      if (value > 350) {
-        fadeAnim.value = withTiming(1, { duration: 700 });
+      if (value > 50) {
+        fadeAnim.value = withTiming(1, { duration: 500 });
       } else {
-        fadeAnim.value = withTiming(0.2, { duration: 400 });
+        fadeAnim.value = withTiming(0.8, { duration: 300 });
       }
     },
   );
@@ -48,27 +50,67 @@ export default function Home() {
     };
   });
 
-  const { logout, user } = useAuth();
+  const { user } = useAuth();
   const {
     transactions,
     balance,
-    onDelete,
     fetchTransactions,
     loading,
-    deletingId,
+    onDelete,
+    setTransactionSheetOpen,
   } = useTransactionContext();
+  const sectionAnimations = useRef(
+    Array.from({ length: 5 }, () => new RNAnimated.Value(0)),
+  ).current;
 
-  const handleLogout = async () => {
-    await logout();
-    router.replace('/login');
-  };
+  const {
+    selectedTransaction,
+    openDetail,
+    closeDetail,
+    handleDeleteFromDetail,
+  } = useTransactionDetailSheet({
+    transactions,
+    onDelete,
+    setTransactionSheetOpen,
+  });
 
   const userName = user?.displayName || 'Cliente';
+
+  const runSectionTransitions = useCallback(() => {
+    sectionAnimations.forEach((anim) => anim.setValue(0));
+
+    RNAnimated.stagger(
+      90,
+      sectionAnimations.map((anim) =>
+        RNAnimated.timing(anim, {
+          toValue: 1,
+          duration: 420,
+          useNativeDriver: true,
+        }),
+      ),
+    ).start();
+  }, [sectionAnimations]);
+
+  const getSectionStyle = useCallback(
+    (index: number) => ({
+      opacity: sectionAnimations[index],
+      transform: [
+        {
+          translateY: sectionAnimations[index].interpolate({
+            inputRange: [0, 1],
+            outputRange: [18, 0],
+          }),
+        },
+      ],
+    }),
+    [sectionAnimations],
+  );
 
   useFocusEffect(
     useCallback(() => {
       fetchTransactions();
-    }, [fetchTransactions]),
+      runSectionTransitions();
+    }, [fetchTransactions, runSectionTransitions]),
   );
 
   return (
@@ -83,43 +125,43 @@ export default function Home() {
         scrollEventThrottle={16}
       >
         {/* Header */}
-        <View style={styles.header}>
+        <RNAnimated.View style={[styles.header, getSectionStyle(0)]}>
           <Text style={styles.greeting}>{`Olá, ${userName}! 👋`}</Text>
-          <Text style={styles.subtitle}>Bem-vindo de volta ao seu banco</Text>
-        </View>
+          <Text style={styles.subtitle}>Bem-vindo de volta</Text>
+        </RNAnimated.View>
 
         {/* Balance Card */}
-        <View style={styles.balanceCard}>
+        <RNAnimated.View style={[styles.balanceCard, getSectionStyle(1)]}>
           <Text style={styles.balanceLabel}>Saldo Total</Text>
           <Text style={styles.balanceAmount}>{formatCurrency(balance)}</Text>
-        </View>
+        </RNAnimated.View>
 
         {/* Chart Card */}
-        <View style={styles.card}>
+        <RNAnimated.View style={[styles.card, getSectionStyle(2)]}>
           <Text style={styles.cardTitle}>Evolução do Saldo</Text>
           <View style={styles.chartContainer}>
             <CartesianChart
               data={sortTransactionsByDateAsc(transactions.slice(0, 10))}
-              xKey='createdAt'
+              xKey="createdAt"
               yKeys={['value']}
             >
               {({ points }) => (
                 <>
-                  <Line points={points.value} color='#2da12b' strokeWidth={3} />
+                  <Line points={points.value} color="#2da12b" strokeWidth={3} />
                   {points.value.map((point, index) => (
                     <Circle
                       key={index}
                       cx={point.x}
                       cy={Number(point.y)}
                       r={4}
-                      color='#2da12b'
+                      color="#2da12b"
                     />
                   ))}
                 </>
               )}
             </CartesianChart>
           </View>
-        </View>
+        </RNAnimated.View>
 
         <Animated.View style={[reanimatedStyle]}>
           <View style={{ ...styles.header, marginTop: 24 }}>
@@ -129,8 +171,8 @@ export default function Home() {
           <View>
             {loading ? (
               <ActivityIndicator
-                color='#2da12b'
-                size='large'
+                color="#2da12b"
+                size="large"
                 style={{ marginTop: 40 }}
               />
             ) : transactions.slice(0, 10).length > 0 ? (
@@ -139,8 +181,7 @@ export default function Home() {
                   <TransactionItem
                     key={item.id}
                     item={item}
-                    deleting={deletingId === item.id}
-                    onDelete={onDelete}
+                    onPress={() => openDetail(item)}
                   />
                 ),
               )
@@ -149,18 +190,15 @@ export default function Home() {
             )}
           </View>
         </Animated.View>
-
-        {/* Logout Button */}
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            pressed && styles.buttonPressed,
-          ]}
-          onPress={handleLogout}
-        >
-          <Text style={styles.buttonText}>Sair</Text>
-        </Pressable>
       </ScrollView>
+
+      <TransactionDetailSheet
+        visible={!!selectedTransaction}
+        item={selectedTransaction}
+        onClose={closeDetail}
+        onDelete={handleDeleteFromDetail}
+        showActions={false}
+      />
     </LinearGradient>
   );
 }

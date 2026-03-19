@@ -181,14 +181,16 @@ export const getUserTransactionsPaginated = async (
       break;
     }
 
-    scanCursor = docs[docs.length - 1];
-    if (docs.length < chunkSize) rawExhausted = true;
-
+    let consumedDoc: QueryDocumentSnapshot<DocumentData> | null = null;
     for (const d of docs) {
+      consumedDoc = d;
       const txn = { id: d.id, ...d.data() } as Transaction;
       if (matchesFilters(txn, filters)) filtered.push(txn);
       if (filtered.length >= pageSize + 1) break;
     }
+
+    if (consumedDoc) scanCursor = consumedDoc;
+    if (docs.length < chunkSize) rawExhausted = true;
 
     guard += 1;
   }

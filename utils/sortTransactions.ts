@@ -1,5 +1,17 @@
 import { Transaction } from '@/types/transaction.type';
 
+const getTransactionTimestamp = (transaction: Transaction): number => {
+  const dateCandidate = transaction.date || transaction.createdAt;
+  const timestamp = new Date(dateCandidate).getTime();
+
+  if (Number.isFinite(timestamp)) {
+    return timestamp;
+  }
+
+  const fallback = new Date(transaction.createdAt).getTime();
+  return Number.isFinite(fallback) ? fallback : 0;
+};
+
 /**
  * Sorts an array of transactions by date, from oldest to newest
  * @param transactions - Array of transactions to sort
@@ -9,8 +21,8 @@ export const sortTransactionsByDateAsc = (
   transactions: Transaction[],
 ): Transaction[] => {
   return [...transactions].sort((a, b) => {
-    const dateA = new Date(a.createdAt).getTime();
-    const dateB = new Date(b.createdAt).getTime();
+    const dateA = getTransactionTimestamp(a);
+    const dateB = getTransactionTimestamp(b);
     return dateA - dateB;
   });
 };
@@ -24,8 +36,8 @@ export const sortTransactionsByDateDesc = (
   transactions: Transaction[],
 ): Transaction[] => {
   return [...transactions].sort((a, b) => {
-    const dateA = new Date(a.createdAt).getTime();
-    const dateB = new Date(b.createdAt).getTime();
+    const dateA = getTransactionTimestamp(a);
+    const dateB = getTransactionTimestamp(b);
     return dateB - dateA;
   });
 };

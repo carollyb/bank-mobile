@@ -1,5 +1,7 @@
+import { TransactionDetailSheet } from '@/components/TransactionDetailSheet';
 import { TransactionItem } from '@/components/TransactionItem';
 import { useTransactionContext } from '@/context/TransactionContext';
+import { useTransactionDetailSheet } from '@/hooks/use-transaction-detail-sheet';
 import { transactionsStyles as styles } from '@/styles/transactionsStyle';
 import { TransactionType } from '@/types/transaction.type';
 import { formatCurrency } from '@/utils/formatCurrency';
@@ -12,6 +14,7 @@ import { useCallback } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  Platform,
   Pressable,
   RefreshControl,
   Text,
@@ -36,7 +39,6 @@ export default function Transactions() {
     fetchTransactions,
     onDelete,
     loadMore,
-    deletingId,
     categories,
     balance,
     loading,
@@ -58,7 +60,19 @@ export default function Transactions() {
     setPickerTarget,
     loadingMore,
     hasMore,
+    setTransactionSheetOpen,
   } = useTransactionContext();
+
+  const {
+    selectedTransaction,
+    openDetail,
+    closeDetail,
+    handleDeleteFromDetail,
+  } = useTransactionDetailSheet({
+    transactions,
+    onDelete,
+    setTransactionSheetOpen,
+  });
 
   useFocusEffect(
     useCallback(() => {
@@ -208,9 +222,11 @@ export default function Transactions() {
               ? startDate || new Date()
               : endDate || new Date()
           }
-          mode='date'
-          display='default'
-          locale='pt-BR'
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          locale="pt-BR"
+          textColor="#1A1A1A"
+          themeVariant="light"
           onChange={(_event, selected) => {
             setPickerTarget(null);
             if (!selected) return;
@@ -229,8 +245,8 @@ export default function Transactions() {
       <View style={styles.listArea}>
         {loading ? (
           <ActivityIndicator
-            color='#2da12b'
-            size='large'
+            color="#2da12b"
+            size="large"
             style={{ marginTop: 40 }}
           />
         ) : (
@@ -238,11 +254,7 @@ export default function Transactions() {
             data={transactions}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <TransactionItem
-                item={item}
-                deleting={deletingId === item.id}
-                onDelete={onDelete}
-              />
+              <TransactionItem item={item} onPress={openDetail} />
             )}
             onEndReachedThreshold={0.35}
             onEndReached={loadMore}
@@ -253,7 +265,7 @@ export default function Transactions() {
                 refreshing={refreshing}
                 onRefresh={onRefresh}
                 colors={['#2da12b']}
-                tintColor='#2da12b'
+                tintColor="#2da12b"
               />
             }
             ListEmptyComponent={
@@ -262,8 +274,8 @@ export default function Transactions() {
             ListFooterComponent={
               loadingMore ? (
                 <ActivityIndicator
-                  color='#2da12b'
-                  size='small'
+                  color="#2da12b"
+                  size="small"
                   style={{ marginBottom: 20 }}
                 />
               ) : !hasMore && transactions.length > 0 ? (
@@ -282,6 +294,13 @@ export default function Transactions() {
       >
         <Text style={styles.fabIcon}>＋</Text>
       </Pressable>
+
+      <TransactionDetailSheet
+        visible={!!selectedTransaction}
+        item={selectedTransaction}
+        onClose={closeDetail}
+        onDelete={handleDeleteFromDetail}
+      />
     </View>
   );
 }

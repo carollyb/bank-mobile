@@ -16,22 +16,19 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
-import { scheduleOnRN } from 'react-native-worklets';
+import { GestureDetector } from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
 
 import CustomAlert from '@/components/CustomAlert';
 import { useAuth } from '@/context/AuthContext';
+import { useTransactionContext } from '@/context/TransactionContext';
+import { useBottomSheetMotion } from '@/hooks/use-bottom-sheet-motion';
 import {
   SHEET_HEIGHT,
   transactionFormStyles as styles,
 } from '@/styles/transactionFormStyles';
 import { TransactionType } from '@/types/transaction.type';
+import { toISODate } from '@/utils/toISODate';
 import {
   addUserCategory,
   getTransactionById,
@@ -63,49 +60,57 @@ type AlertState = {
   message: string;
 };
 
+const getDateKeyInSaoPaulo = (value: Date): string => {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(value);
+
+  const year = parts.find((p) => p.type === 'year')?.value ?? '0000';
+  const month = parts.find((p) => p.type === 'month')?.value ?? '01';
+  const day = parts.find((p) => p.type === 'day')?.value ?? '01';
+  return `${year}-${month}-${day}`;
+};
+
+const getTodayInSaoPaulo = (): Date => {
+  const [year, month, day] = getDateKeyInSaoPaulo(new Date())
+    .split('-')
+    .map(Number);
+  return new Date(year, month - 1, day);
+};
+
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function TransactionForm() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const { user } = useAuth();
+  const { setTransactionSheetOpen, fetchTransactions } =
+    useTransactionContext();
   const isEditing = !!id;
+  const todayInSaoPaulo = useMemo(() => getTodayInSaoPaulo(), []);
 
   // ── Animation ──────────────────────────────────────────────────────────
-  const translateY = useSharedValue(SHEET_HEIGHT);
+  const navigateBack = useCallback(() => {
+    setTransactionSheetOpen(false);
+    router.back();
+  }, [setTransactionSheetOpen]);
+
+  const { animatedStyle, panGesture, closeSheet } = useBottomSheetMotion({
+    visible: true,
+    hiddenY: SHEET_HEIGHT,
+    onClose: navigateBack,
+  });
 
   useEffect(() => {
-    translateY.value = withSpring(0, {
-      damping: 26,
-      stiffness: 260,
-      mass: 0.5,
-    });
-  }, []);
-
-  const navigateBack = useCallback(() => router.back(), []);
+    setTransactionSheetOpen(true);
+    return () => setTransactionSheetOpen(false);
+  }, [setTransactionSheetOpen]);
 
   const close = useCallback(() => {
-    translateY.value = withTiming(SHEET_HEIGHT, { duration: 280 }, () =>
-      scheduleOnRN(navigateBack),
-    );
-  }, [navigateBack]);
-
-  const panGesture = Gesture.Pan()
-    .onUpdate((e) => {
-      if (e.translationY > 0) translateY.value = e.translationY;
-    })
-    .onEnd((e) => {
-      if (e.translationY > 100 || e.velocityY > 900) {
-        translateY.value = withTiming(SHEET_HEIGHT, { duration: 250 }, () =>
-          scheduleOnRN(navigateBack),
-        );
-      } else {
-        translateY.value = withSpring(0, { damping: 26, stiffness: 260 });
-      }
-    });
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
-  }));
+    closeSheet();
+  }, [closeSheet]);
 
   // ── Form state ─────────────────────────────────────────────────────────
   const [type, setType] = useState<TransactionType>('withdraw');
@@ -119,7 +124,6 @@ export default function TransactionForm() {
     'restaurante',
     'estudos',
   ]);
-  const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [description, setDescription] = useState('');
   const [attachment, setAttachment] = useState<Attachment | null>(null);
@@ -151,7 +155,6 @@ export default function TransactionForm() {
           setAmountRaw(String(Math.round(Math.abs(txn.value) * 100)));
           setDate(new Date(txn.date));
           setCategory(txn.category ?? null);
-          setFrom(txn.from ?? '');
           setTo(txn.to ?? '');
           setDescription(txn.description ?? '');
         })
@@ -255,17 +258,6 @@ export default function TransactionForm() {
     message: string,
   ) => setAlert({ visible: true, type, title, message });
 
-  const resetForm = () => {
-    setType('withdraw');
-    setAmountRaw('');
-    setDate(new Date());
-    setCategory(null);
-    setFrom('');
-    setTo('');
-    setDescription('');
-    setAttachment(null);
-  };
-
   const handleSave = async () => {
     if (!user) return;
     if (!amountRaw) {
@@ -273,6 +265,25 @@ export default function TransactionForm() {
         'error',
         'Campo obrigatório',
         'Informe o valor da transação.',
+      );
+      return;
+    }
+
+    const rawValue = parseInt(amountRaw, 10) / 100;
+    if (!Number.isFinite(rawValue) || rawValue <= 0) {
+      showAlertMsg(
+        'error',
+        'Valor inválido',
+        'Informe um valor maior que zero.',
+      );
+      return;
+    }
+
+    if (getDateKeyInSaoPaulo(date) > getDateKeyInSaoPaulo(new Date())) {
+      showAlertMsg(
+        'error',
+        'Data inválida',
+        'Não é permitido cadastrar transações em data futura.',
       );
       return;
     }
@@ -288,7 +299,6 @@ export default function TransactionForm() {
         );
       }
 
-      const rawValue = parseInt(amountRaw, 10) / 100;
       const value = ['withdraw', 'payment', 'transfer'].includes(type)
         ? -Math.abs(rawValue)
         : Math.abs(rawValue);
@@ -296,27 +306,23 @@ export default function TransactionForm() {
       const txnData = {
         type,
         value,
-        date: date.toISOString().split('T')[0],
+        date: toISODate(date),
         accountId: user.uid,
+        createdAt: new Date().toISOString(),
         ...(showCategory && category ? { category } : {}),
         ...(description ? { description } : {}),
-        ...(showTransferFields && from ? { from } : {}),
         ...(showTransferFields && to ? { to } : {}),
         ...(urlAnexo ? { urlAnexo } : {}),
       };
 
       if (isEditing && id) {
         await updateTransaction(user.uid, id, txnData);
-        showAlertMsg(
-          'success',
-          'Atualizado!',
-          'Transação atualizada com sucesso.',
-        );
       } else {
         await saveTransaction(user.uid, txnData);
-        showAlertMsg('success', 'Salvo!', 'Transação registrada com sucesso.');
-        resetForm();
       }
+
+      await fetchTransactions(true);
+      closeSheet();
     } catch (error) {
       const code =
         typeof error === 'object' && error && 'code' in error
@@ -381,14 +387,17 @@ export default function TransactionForm() {
                   style={[
                     styles.typeChip,
                     type === t.key && styles.typeChipSelected,
+                    isEditing && styles.typeChipDisabled,
                   ]}
                   onPress={() => handleTypeChange(t.key)}
+                  disabled={isEditing}
                 >
                   <Text style={styles.typeChipIcon}>{t.icon}</Text>
                   <Text
                     style={[
                       styles.typeChipText,
                       type === t.key && styles.typeChipTextSelected,
+                      isEditing && styles.typeChipTextDisabled,
                     ]}
                   >
                     {t.label}
@@ -396,6 +405,11 @@ export default function TransactionForm() {
                 </Pressable>
               ))}
             </View>
+            {isEditing && (
+              <Text style={styles.typeLockHint}>
+                O tipo não pode ser alterado ao editar uma transação.
+              </Text>
+            )}
 
             {/* ── Valor + Data ── */}
             <View style={styles.row}>
@@ -431,9 +445,19 @@ export default function TransactionForm() {
                 mode="date"
                 display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                 locale="pt-BR"
+                textColor="#1A1A1A"
+                themeVariant="light"
+                maximumDate={todayInSaoPaulo}
                 onChange={(_event, selected) => {
                   setShowDatePicker(Platform.OS === 'ios');
-                  if (selected) setDate(selected);
+                  if (!selected) return;
+
+                  const safeDate =
+                    getDateKeyInSaoPaulo(selected) >
+                    getDateKeyInSaoPaulo(new Date())
+                      ? todayInSaoPaulo
+                      : selected;
+                  setDate(safeDate);
                 }}
               />
             )}
@@ -477,14 +501,6 @@ export default function TransactionForm() {
             {/* ── Transferência ── */}
             {showTransferFields && (
               <>
-                <Text style={styles.sectionLabel}>De</Text>
-                <TextInput
-                  style={styles.input}
-                  value={from}
-                  onChangeText={setFrom}
-                  placeholder="Conta de origem"
-                  placeholderTextColor="#CCC"
-                />
                 <Text style={styles.sectionLabel}>Para</Text>
                 <TextInput
                   style={styles.input}

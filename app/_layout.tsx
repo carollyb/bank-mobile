@@ -18,18 +18,18 @@ export default function RootLayout() {
         <AuthProvider>
           <TransactionProvider>
             <Stack>
-              <Stack.Screen name='(splash)' options={{ headerShown: false }} />
-              <Stack.Screen name='(auth)' options={{ headerShown: false }} />
+              <Stack.Screen name="(splash)" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
               <Stack.Screen
-                name='(protected)'
+                name="(protected)"
                 options={{ headerShown: false }}
               />
               <Stack.Screen
-                name='modal'
+                name="modal"
                 options={{ presentation: 'modal', title: 'Modal' }}
               />
             </Stack>
-            <StatusBar style='auto' />
+            <StatusBar style="auto" />
           </TransactionProvider>
         </AuthProvider>
       </ThemeProvider>

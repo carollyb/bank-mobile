@@ -8,7 +8,6 @@ export type Transaction = {
   date: string;
   category?: string;
   description?: string;
-  from?: string;
   to?: string;
   urlAnexo?: string;
   createdAt: string;

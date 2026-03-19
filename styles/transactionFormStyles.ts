@@ -126,6 +126,18 @@ export const transactionFormStyles = StyleSheet.create({
     color: '#2da12b',
     fontWeight: '700',
   },
+  typeChipDisabled: {
+    opacity: 0.68,
+  },
+  typeChipTextDisabled: {
+    color: '#8A8A8A',
+  },
+  typeLockHint: {
+    marginTop: 8,
+    fontSize: 12,
+    color: '#8F8F8F',
+    fontWeight: '500',
+  },
 
   // ── Row (amount + date) ───────────────────────────────────────────────────
   row: {

@@ -17,7 +17,7 @@ Aplicativo mobile de gerenciamento de transações bancárias desenvolvido com [
 1. **Clone o repositório**
 
    ```bash
-   git clone <seu-repositorio>
+   git clone https://github.com/carollyb/bank-mobile
    cd bank-mobile
    ```
 
@@ -31,12 +31,12 @@ Aplicativo mobile de gerenciamento de transações bancárias desenvolvido com [
    - Crie um arquivo `.env` na raiz do projeto com suas credenciais do Firebase:
 
    ```env
-   EXPO_PUBLIC_FIREBASE_API_KEY=sua_api_key
-   EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=seu_auth_domain
-   EXPO_PUBLIC_FIREBASE_PROJECT_ID=seu_project_id
-   EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=seu_storage_bucket
-   EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=seu_sender_id
-   EXPO_PUBLIC_FIREBASE_APP_ID=seu_app_id
+   EXPO_PUBLIC_FIREBASE_API_KEY=AIzaSyCmvmnLjAs4SGLDiJDDCaGJE-IQm9L4C3E
+   EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=bank-mobile-df4ec.firebaseapp.com
+   EXPO_PUBLIC_FIREBASE_PROJECT_ID=bank-mobile-df4ec
+   EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=bank-mobile-df4ec.firebasestorage.app
+   EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=420246894148
+   EXPO_PUBLIC_FIREBASE_APP_ID=1:420246894148:web:7d2afa1dbfff6ed17aee11
    ```
 
 4. **Inicie a aplicação**

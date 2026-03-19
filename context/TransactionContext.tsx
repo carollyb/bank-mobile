@@ -7,6 +7,7 @@ import {
   useState,
 } from 'react';
 
+import { sortTransactionsByDateDesc } from '@/utils/sortTransactions';
 import { toISODate } from '@/utils/toISODate';
 import {
   deleteTransaction,
@@ -45,11 +46,20 @@ interface ITransactionContext {
   setEndDate: React.Dispatch<React.SetStateAction<Date | null>>;
   pickerTarget: 'start' | 'end' | null;
   setPickerTarget: React.Dispatch<React.SetStateAction<'start' | 'end' | null>>;
+  transactionSheetOpen: boolean;
+  setTransactionSheetOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const TransactionContext = createContext<ITransactionContext | undefined>(
   undefined,
 );
+
+const MIN_LOAD_MORE_MS = 650;
+
+const wait = (ms: number) =>
+  new Promise<void>((resolve) => {
+    setTimeout(resolve, ms);
+  });
 
 export const TransactionProvider = ({
   children,
@@ -76,7 +86,8 @@ export const TransactionProvider = ({
   const [pickerTarget, setPickerTarget] = useState<'start' | 'end' | null>(
     null,
   );
-  const PAGE_SIZE = 20;
+  const [transactionSheetOpen, setTransactionSheetOpen] = useState(false);
+  const PAGE_SIZE = 10;
 
   const filters = useMemo(
     () => ({
@@ -113,7 +124,7 @@ export const TransactionProvider = ({
           getUserCategories(user.uid),
         ]);
 
-        setTransactions(page.transactions);
+        setTransactions(sortTransactionsByDateDesc(page.transactions));
         setLastVisible(page.lastVisible);
         setHasMore(page.hasMore);
         setBalance(bal);
@@ -149,12 +160,17 @@ export const TransactionProvider = ({
     if (!user || loading || loadingMore || !hasMore || !lastVisible) return;
     setLoadingMore(true);
     try {
-      const page = await getUserTransactionsPaginated(user.uid, {
-        pageSize: PAGE_SIZE,
-        cursor: lastVisible,
-        filters,
-      });
-      setTransactions((prev) => [...prev, ...page.transactions]);
+      const [page] = await Promise.all([
+        getUserTransactionsPaginated(user.uid, {
+          pageSize: PAGE_SIZE,
+          cursor: lastVisible,
+          filters,
+        }),
+        wait(MIN_LOAD_MORE_MS),
+      ]);
+      setTransactions((prev) =>
+        sortTransactionsByDateDesc([...prev, ...page.transactions]),
+      );
       setLastVisible(page.lastVisible);
       setHasMore(page.hasMore);
     } catch (error) {
@@ -193,6 +209,7 @@ export const TransactionProvider = ({
     },
     [user],
   );
+
   const clearFilters = () => {
     setTypeFilter('all');
     setCategoryFilter('all');
@@ -229,6 +246,8 @@ export const TransactionProvider = ({
         setEndDate,
         pickerTarget,
         setPickerTarget,
+        transactionSheetOpen,
+        setTransactionSheetOpen,
       }}
     >
       {children}
