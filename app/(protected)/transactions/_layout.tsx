@@ -1,36 +1,16 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Stack } from 'expo-router';
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-
-export default function TabLayout() {
+export default function TransactionsLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: 'light',
-        headerShown: false,
-        tabBarButton: HapticTab,
-      }}
-    >
-      <Tabs.Screen
-        name='index'
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="transaction-form"
         options={{
-          title: 'Extrato',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name='house.fill' color={color} />
-          ),
+          presentation: 'transparentModal',
+          animation: 'fade',
         }}
       />
-      <Tabs.Screen
-        name='operations'
-        options={{
-          title: 'Adicionar / Editar',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name='paperplane.fill' color={color} />
-          ),
-        }}
-      />
-    </Tabs>
+    </Stack>
   );
 }
